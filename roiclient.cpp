@@ -19,7 +19,7 @@
 #include <iomanip>
 #include <string>
 
-#include "lib/client_socket_handler.h"
+#include "lib/client_socket_handler/client_socket_handler.h"
 
 enum Console_type { SOCKET, SERIAL, DRIVE, MOTORS };
 
@@ -27,11 +27,11 @@ void print_usage(){
         std::cout << "Usage: roiclient host port\n\n";
 }
 
-void err_quit(int errsv){
-        std::cout << "Errno: " << errsv << std::endl;
-        std::cout << "Exiting.." << std::endl;
-        std::exit(-1);
-}
+//void err_quit(int errsv){
+//        std::cout << "Errno: " << errsv << std::endl;
+//        std::cout << "Exiting.." << std::endl;
+//        std::exit(-1);
+//}
 
 void wakeRoomba(client_socket_handler* c_socket_p){
         c_socket_p->send_string("sendcmd,wake");
@@ -45,7 +45,7 @@ void initSafe(client_socket_handler* c_socket_p){
 }
 
 void power_led(client_socket_handler* c_socket_p){
-        std::string led_data = "";
+        std::string led_data;
         std::cout << "Please enter power LED data: " << std::endl;
         std::getline(std::cin, led_data);
         std::string command_string = "sendcmd,power_led," + led_data;
@@ -53,19 +53,19 @@ void power_led(client_socket_handler* c_socket_p){
 }
 
 void add_song(client_socket_handler* c_socket_p){
-        std::string song_string = "";
+        std::string song_string;
         std::cout << "Please enter song data: " << std::endl;
         std::getline(std::cin, song_string);
-        std::string command_string = "";
+        std::string command_string;
         command_string = "sendcmd,add_song," + song_string;
         c_socket_p->send_string(command_string);
 }
 
 void play_song(client_socket_handler* c_socket_p){
-        std::string song_num = "";
+        std::string song_num;
         std::cout << "Please enter song number: " << std::endl;
         std::getline(std::cin, song_num);
-        std::string command_string = "";
+        std::string command_string;
         command_string = "sendcmd,play_song," + song_num;
         c_socket_p->send_string(command_string);
 }
@@ -95,7 +95,7 @@ void command_console(Console_type type, client_socket_handler* c_socket_p){
                 break;
 
         }
-        while (1) {
+        while (true) {
                 std::cout << mode + " Mode: enter data or type 'quit' to exit:" << std::endl;
 
                 std::string velocity;
@@ -119,7 +119,7 @@ void command_console(Console_type type, client_socket_handler* c_socket_p){
 }
 
 void drive_console(client_socket_handler* c_socket_p){
-        while (1) {
+        while (true) {
                 std::cout << "Drive Mode: enter data or type 'quit' to exit:" << std::endl;
 
                 std::string velocity, radius;
@@ -138,8 +138,8 @@ void drive_console(client_socket_handler* c_socket_p){
         }
 }
 
-void server_console(client_socket_handler* c_socket_p, std::string command = "sendcmd,"){
-        while (1) {
+void server_console(client_socket_handler* c_socket_p, const std::string &command = "sendcmd,"){
+        while (true) {
                 std::cout << "Raw Socket Mode: enter data or type 'quit' to exit:" << std::endl;
 
                 std::string input_string;
@@ -152,7 +152,7 @@ void server_console(client_socket_handler* c_socket_p, std::string command = "se
 }
 
 void roomba_console(client_socket_handler* c_socket_p){
-        while (1) {
+        while (true) {
                 std::cout << "Raw Serial Mode: enter data or type 'quit' to exit:" << std::endl;
 
                 std::string input_string;
@@ -246,7 +246,6 @@ int mainMenu(client_socket_handler* c_socket_p){
                 break;
         case 9:
                 return 1;
-                break;
         default:
                 std::cout << "ERROR! You have selected an invalid choice." << std::endl;
                 break;
@@ -262,9 +261,9 @@ int main( int argc, char* argv[] ){
         }
 
         std::string hostname;
-        int port_number;
+        uint16_t port_number;
         try {
-                port_number = std::stoi(argv[2]);
+                port_number = (uint16_t) std::stoi(argv[2]);
         } catch (...) {
                 print_usage();
                 exit(-1);
