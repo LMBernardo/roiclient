@@ -1,3 +1,0 @@
-[submodule "lib/client_socket_handler"]
-	path = lib/client_socket_handler
-	url = git@github.com:LMBernardo/client_socket_handler.git
