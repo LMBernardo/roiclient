@@ -3,9 +3,9 @@ project(roiclient)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(lib/client_socket_handler)
+include_directories(lib/rsocket)
 
 add_executable(roiclient
-        lib/client_socket_handler/client_socket_handler.cpp
-        lib/client_socket_handler/client_socket_handler.h
+        lib/rsocket/client_socket.cpp
+        lib/rsocket/client_socket.h
         roiclient.cpp)

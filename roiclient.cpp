@@ -19,7 +19,7 @@
 #include <iomanip>
 #include <string>
 
-#include "lib/client_socket_handler/client_socket_handler.h"
+#include "lib/rsocket/client_socket.h"
 
 enum Console_type { SOCKET, SERIAL, DRIVE, MOTORS };
 
@@ -33,18 +33,18 @@ void print_usage(){
 //        std::exit(-1);
 //}
 
-void wakeRoomba(client_socket_handler* c_socket_p){
+void wakeRoomba(client_socket* c_socket_p){
         c_socket_p->send_string("sendcmd,wake");
 }
 
 // Start ROI, send CONTROL command, and change LED to orange
 // Puts Roomba in SAFE mode
-void initSafe(client_socket_handler* c_socket_p){
+void initSafe(client_socket* c_socket_p){
         c_socket_p->send_string("sendcmd,init_safe");
         c_socket_p->send_string("sendcmd,power_led,100 220");
 }
 
-void power_led(client_socket_handler* c_socket_p){
+void power_led(client_socket* c_socket_p){
         std::string led_data;
         std::cout << "Please enter power LED data: " << std::endl;
         std::getline(std::cin, led_data);
@@ -52,7 +52,7 @@ void power_led(client_socket_handler* c_socket_p){
         c_socket_p->send_string(command_string);
 }
 
-void add_song(client_socket_handler* c_socket_p){
+void add_song(client_socket* c_socket_p){
         std::string song_string;
         std::cout << "Please enter song data: " << std::endl;
         std::getline(std::cin, song_string);
@@ -61,7 +61,7 @@ void add_song(client_socket_handler* c_socket_p){
         c_socket_p->send_string(command_string);
 }
 
-void play_song(client_socket_handler* c_socket_p){
+void play_song(client_socket* c_socket_p){
         std::string song_num;
         std::cout << "Please enter song number: " << std::endl;
         std::getline(std::cin, song_num);
@@ -71,7 +71,7 @@ void play_song(client_socket_handler* c_socket_p){
 }
 
 // Generic console
-void command_console(Console_type type, client_socket_handler* c_socket_p){
+void command_console(Console_type type, client_socket* c_socket_p){
         std::string mode;
         std::string command;
         switch(type) {
@@ -118,7 +118,7 @@ void command_console(Console_type type, client_socket_handler* c_socket_p){
         }
 }
 
-void drive_console(client_socket_handler* c_socket_p){
+void drive_console(client_socket* c_socket_p){
         while (true) {
                 std::cout << "Drive Mode: enter data or type 'quit' to exit:" << std::endl;
 
@@ -138,7 +138,7 @@ void drive_console(client_socket_handler* c_socket_p){
         }
 }
 
-void server_console(client_socket_handler* c_socket_p, const std::string &command = "sendcmd,"){
+void server_console(client_socket* c_socket_p, const std::string &command = "sendcmd,"){
         while (true) {
                 std::cout << "Raw Socket Mode: enter data or type 'quit' to exit:" << std::endl;
 
@@ -151,7 +151,7 @@ void server_console(client_socket_handler* c_socket_p, const std::string &comman
         }
 }
 
-void roomba_console(client_socket_handler* c_socket_p){
+void roomba_console(client_socket* c_socket_p){
         while (true) {
                 std::cout << "Raw Serial Mode: enter data or type 'quit' to exit:" << std::endl;
 
@@ -164,7 +164,7 @@ void roomba_console(client_socket_handler* c_socket_p){
         }
 }
 
-int advanced_menu(client_socket_handler* c_socket_p){
+int advanced_menu(client_socket* c_socket_p){
 
         int myChoice = 0;
 
@@ -198,7 +198,7 @@ int advanced_menu(client_socket_handler* c_socket_p){
 
 // Main menu
 // Taken from: http://www.cplusplus.com/forum/general/44671/
-int mainMenu(client_socket_handler* c_socket_p){
+int mainMenu(client_socket* c_socket_p){
         int myChoice = 0;
 
         std::cout << std::endl;
@@ -271,7 +271,7 @@ int main( int argc, char* argv[] ){
 
         hostname = argv[1];
 
-        client_socket_handler c_socket;
+        client_socket c_socket;
 
         if ( c_socket.c_create() < 0) {
                 std::cout << "Failed to create socket" << std::endl;
